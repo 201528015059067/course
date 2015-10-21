@@ -11,7 +11,22 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    @sort_by = params[:sort_by]
+    if @sort_by == "release_date"
+      query = Movie.order(:release_date)
+    elsif @sort_by == "title"
+      query = Movie.order(:title)
+    else
+      query = Movie
+    end
+    
+    @all_ratings = Movie.ratings
+    if  !params[:ratings].nil?
+      @ratings = params[:ratings].map { |r| r[0] }
+      @movies = query.where(rating: @ratings)
+    else
+      @movies = query.all
+    end
   end
 
   def new
